@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:expancetracker/Transaction.dart';
 import 'package:expancetracker/chart.dart';
 import 'package:expancetracker/new_transaction.dart';
@@ -72,27 +74,47 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Expanse Tracker"),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () => startAddNewTransaction(context),
+    // Used to find out that the device is landscape or portraid
+   final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+    final appBarWidget = Platform.isIOS ? CupertinoNavigationBar(
+      middle: Text("Expense Tracker"),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          GestureDetector(
+            child: Icon(CupertinoIcons.add),
+            onTap: () => startAddNewTransaction(context),
           )
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Chart(recentTransactions: _recentTransaction,),
-            TransactionList(transactions,_deleteTransaction),
-          ],
-        ),
-      ),
+    ) : AppBar(
+      title: Text("Expanse Tracker"),
+      actions: [
+        IconButton(
+          icon: Icon(Icons.add),
+          onPressed: () => startAddNewTransaction(context),
+        )
+      ],
+    );
+   final bodyPart = SafeArea(child: Column(
+     crossAxisAlignment: CrossAxisAlignment.stretch,
+     children: [
+       Container(
+           height: MediaQuery.of(context).size.height * 0.3,
+           child: Chart(recentTransactions: _recentTransaction,)),
+       TransactionList(transactions,_deleteTransaction),
+     ],
+   ),);
+   //we can do same for material app with cupertino app
+
+   return Platform.isIOS ? CupertinoPageScaffold(
+     child: bodyPart,
+     navigationBar: appBarWidget,
+   ) :Scaffold(
+      appBar: appBarWidget,
+      body: bodyPart,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: Platform.isIOS ? Container() : FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () => startAddNewTransaction(context),
       ),

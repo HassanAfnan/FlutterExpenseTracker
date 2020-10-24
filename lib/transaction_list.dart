@@ -5,10 +5,12 @@ class TransactionList extends StatelessWidget {
   final List<Transaction> transactions;
   final Function detete;
   TransactionList(this.transactions, this.detete);
+
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
     return Container(
-      height: 400,
+      height: mediaQuery.size.height * 0.6,
       child: transactions.isEmpty? Center(child: Text("No Transactions",style: Theme.of(context).textTheme.title,)) :ListView.builder(
           itemBuilder: (context,index){
             // return Card(
@@ -58,7 +60,7 @@ class TransactionList extends StatelessWidget {
                   subtitle: Text(
                     DateFormat.yMMMd().format(transactions[index].date),
                   ),
-                  trailing: IconButton(icon: Icon(Icons.delete),color: Colors.red,
+                  trailing: mediaQuery.size.width > 400 ? FlatButton.icon(onPressed: () => detete(transactions[index].id), icon: Icon(Icons.delete), label: Text("Delete")) :IconButton(icon: Icon(Icons.delete),color: Colors.red,
                     onPressed: () => detete(transactions[index].id)
                   ),
                 ),
